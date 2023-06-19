@@ -50,8 +50,9 @@ func TestCreate(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			received, _ := taskUseCase.Create(test.args)
+			received, err := taskUseCase.Create(test.args)
 
+			assert.NoError(t, err)
 			assert.EqualValues(t, test.expected, received)
 		})
 	}
@@ -99,8 +100,9 @@ func TestGetById(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			received, _ := taskUseCase.GetById(test.args.sessionId, test.args.taskId)
+			received, err := taskUseCase.GetById(test.args.sessionId, test.args.taskId)
 
+			assert.NoError(t, err)
 			assert.EqualValues(t, test.expected, received)
 		})
 	}
@@ -150,8 +152,9 @@ func TestGetAll(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			received, _ := taskUseCase.GetAll(test.args.sessionId)
+			received, err := taskUseCase.GetAll(test.args.sessionId)
 
+			assert.NoError(t, err)
 			assert.EqualValues(t, test.expected, received)
 		})
 	}
@@ -199,8 +202,9 @@ func TestComplete(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			received, _ := taskUseCase.Complete(test.args.sessionId, test.args.taskId)
+			received, err := taskUseCase.Complete(test.args.sessionId, test.args.taskId)
 
+			assert.NoError(t, err)
 			assert.EqualValues(t, test.expected, received)
 		})
 	}
@@ -245,8 +249,9 @@ func TestUpdate(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			received, _ := taskUseCase.Update(test.args)
+			received, err := taskUseCase.Update(test.args)
 
+			assert.NoError(t, err)
 			assert.EqualValues(t, test.expected, received)
 		})
 	}
