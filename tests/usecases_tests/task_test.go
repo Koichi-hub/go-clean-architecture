@@ -38,7 +38,7 @@ func TestCreate(t *testing.T) {
 	}
 
 	taskRepoMock := repos_mocks.NewTaskRepoMock()
-	taskRepoMock.On("Save", mock.AnythingOfType("entities.Task")).Return(entities.Task{
+	taskRepoMock.On("Create", mock.AnythingOfType("entities.Task")).Return(entities.Task{
 		SessionId:   "1",
 		Id:          1,
 		Title:       "task 1",
@@ -190,13 +190,14 @@ func TestComplete(t *testing.T) {
 	}
 
 	taskRepoMock := repos_mocks.NewTaskRepoMock()
-	taskRepoMock.On("Complete", mock.AnythingOfType("string"), mock.AnythingOfType("uint")).Return(entities.Task{
+	taskRepoMock.On("GetById", mock.AnythingOfType("string"), mock.AnythingOfType("uint")).Return(entities.Task{
 		SessionId:   "1",
 		Id:          1,
 		Title:       "task 1",
 		Description: "description for task 1",
-		Completed:   true,
+		Completed:   false,
 	}, nil).Once()
+	taskRepoMock.On("Update", mock.AnythingOfType("entities.Task")).Return(nil).Once()
 
 	var taskUseCase interfaces.TaskUseCase = usecases.NewTaskUseCase(taskRepoMock)
 
@@ -237,13 +238,7 @@ func TestUpdate(t *testing.T) {
 	}
 
 	taskRepoMock := repos_mocks.NewTaskRepoMock()
-	taskRepoMock.On("Save", mock.AnythingOfType("entities.Task")).Return(entities.Task{
-		SessionId:   "1",
-		Id:          1,
-		Title:       "task 2",
-		Description: "description for task 2",
-		Completed:   false,
-	}, nil).Once()
+	taskRepoMock.On("Update", mock.AnythingOfType("entities.Task")).Return(nil).Once()
 
 	var taskUseCase interfaces.TaskUseCase = usecases.NewTaskUseCase(taskRepoMock)
 

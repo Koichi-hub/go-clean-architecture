@@ -15,9 +15,9 @@ type TaskUseCase interface {
 }
 
 type TaskRepo interface {
-	Save(entities.Task) (entities.Task, error)
+	Create(entities.Task) (entities.Task, error)
 	GetById(sessionId string, taskId uint) (entities.Task, error)
 	GetAll(sessionId string) ([]entities.Task, error)
-	Complete(sessionId string, taskId uint) (entities.Task, error)
+	Update(entities.Task) (entities.Task, error)
 	Delete(sessionId string, taskId uint) error
 }
