@@ -44,10 +44,10 @@ func (taskUseCase *TaskUseCase) GetAll(sessionId string) ([]dto.TaskDto, error) 
 		return []dto.TaskDto{}, err
 	}
 
-	tasksDto := []dto.TaskDto{}
-	for _, task := range tasks {
+	tasksDto := make([]dto.TaskDto, len(tasks))
+	for i, task := range tasks {
 		taskDto := fromTaskToTaskDto(task)
-		tasksDto = append(tasksDto, taskDto)
+		tasksDto[i] = taskDto
 	}
 	return tasksDto, nil
 }
