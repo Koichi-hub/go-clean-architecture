@@ -22,9 +22,8 @@ import (
 
 func TestCreate(t *testing.T) {
 	type testCase struct {
-		name     string
-		args     api_dto.CreateTaskRequest
-		expected api_dto.TaskResponse
+		name string
+		args api_dto.CreateTaskRequest
 	}
 
 	tests := []testCase{
@@ -34,24 +33,11 @@ func TestCreate(t *testing.T) {
 				Title:       "task 1",
 				Description: "description for task 1",
 			},
-			expected: api_dto.TaskResponse{
-				SessionId:   "1",
-				Id:          1,
-				Title:       "task 1",
-				Description: "description for task 1",
-				Completed:   false,
-			},
 		},
 	}
 
 	taskUseCaseMock := usecases_mocks.NewTaskUseCaseMock()
-	taskUseCaseMock.On("Create", mock.AnythingOfType("dto.CreateTaskDto")).Return(dto.TaskDto{
-		SessionId:   "1",
-		Id:          1,
-		Title:       "task 1",
-		Description: "description for task 1",
-		Completed:   false,
-	}, nil).Once()
+	taskUseCaseMock.On("Create", mock.AnythingOfType("dto.CreateTaskDto")).Return(nil).Once()
 
 	taskController := controllers.NewTaskController(taskUseCaseMock)
 
@@ -71,10 +57,6 @@ func TestCreate(t *testing.T) {
 
 			taskController.Create(ctx)
 			assert.Equal(t, http.StatusCreated, res.Code)
-
-			var received api_dto.TaskResponse
-			json.Unmarshal(res.Body.Bytes(), &received)
-			assert.EqualValues(t, test.expected, received)
 		})
 	}
 }
@@ -209,7 +191,6 @@ func TestComplete(t *testing.T) {
 	type testCase struct {
 		name string
 		args
-		expected api_dto.TaskResponse
 	}
 
 	tests := []testCase{
@@ -218,24 +199,11 @@ func TestComplete(t *testing.T) {
 			args: args{
 				taskId: 1,
 			},
-			expected: api_dto.TaskResponse{
-				SessionId:   "1",
-				Id:          1,
-				Title:       "task 1",
-				Description: "description for task 1",
-				Completed:   true,
-			},
 		},
 	}
 
 	taskUseCaseMock := usecases_mocks.NewTaskUseCaseMock()
-	taskUseCaseMock.On("Complete", mock.AnythingOfType("string"), mock.AnythingOfType("uint")).Return(dto.TaskDto{
-		SessionId:   "1",
-		Id:          1,
-		Title:       "task 1",
-		Description: "description for task 1",
-		Completed:   true,
-	}, nil).Once()
+	taskUseCaseMock.On("Complete", mock.AnythingOfType("string"), mock.AnythingOfType("uint")).Return(nil).Once()
 
 	taskController := controllers.NewTaskController(taskUseCaseMock)
 
@@ -259,10 +227,6 @@ func TestComplete(t *testing.T) {
 
 			taskController.Complete(ctx)
 			assert.Equal(t, http.StatusOK, res.Code)
-
-			var received api_dto.TaskResponse
-			json.Unmarshal(res.Body.Bytes(), &received)
-			assert.EqualValues(t, test.expected, received)
 		})
 	}
 }
@@ -276,7 +240,6 @@ func TestUpdate(t *testing.T) {
 	type testCase struct {
 		name string
 		args
-		expected api_dto.TaskResponse
 	}
 
 	tests := []testCase{
@@ -289,24 +252,11 @@ func TestUpdate(t *testing.T) {
 					Description: "description for task 2",
 				},
 			},
-			expected: api_dto.TaskResponse{
-				SessionId:   "1",
-				Id:          1,
-				Title:       "task 2",
-				Description: "description for task 2",
-				Completed:   false,
-			},
 		},
 	}
 
 	taskUseCaseMock := usecases_mocks.NewTaskUseCaseMock()
-	taskUseCaseMock.On("Update", mock.AnythingOfType("dto.UpdateTaskDto")).Return(dto.TaskDto{
-		SessionId:   "1",
-		Id:          1,
-		Title:       "task 2",
-		Description: "description for task 2",
-		Completed:   false,
-	}, nil).Once()
+	taskUseCaseMock.On("Update", mock.AnythingOfType("dto.UpdateTaskDto")).Return(nil).Once()
 
 	taskController := controllers.NewTaskController(taskUseCaseMock)
 
@@ -332,10 +282,6 @@ func TestUpdate(t *testing.T) {
 
 			taskController.Update(ctx)
 			assert.Equal(t, http.StatusOK, res.Code)
-
-			var received api_dto.TaskResponse
-			json.Unmarshal(res.Body.Bytes(), &received)
-			assert.EqualValues(t, test.expected, received)
 		})
 	}
 }

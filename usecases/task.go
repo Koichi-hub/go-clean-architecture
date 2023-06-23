@@ -16,16 +16,10 @@ func NewTaskUseCase(taskRepo interfaces.TaskRepo) *TaskUseCase {
 	}
 }
 
-func (taskUseCase *TaskUseCase) Create(createTaskDto dto.CreateTaskDto) (dto.TaskDto, error) {
+func (taskUseCase *TaskUseCase) Create(createTaskDto dto.CreateTaskDto) error {
 	task := fromCreateTaskDtoToTask(createTaskDto)
 
-	taskResult, err := taskUseCase.taskRepo.Create(task)
-	if err != nil {
-		return dto.TaskDto{}, err
-	}
-
-	taskDto := fromTaskToTaskDto(taskResult)
-	return taskDto, nil
+	return taskUseCase.taskRepo.Create(task)
 }
 
 func (taskUseCase *TaskUseCase) GetById(sessionId string, taskId uint) (dto.TaskDto, error) {
@@ -52,33 +46,21 @@ func (taskUseCase *TaskUseCase) GetAll(sessionId string) ([]dto.TaskDto, error) 
 	return tasksDto, nil
 }
 
-func (taskUseCase *TaskUseCase) Complete(sessionId string, taskId uint) (dto.TaskDto, error) {
+func (taskUseCase *TaskUseCase) Complete(sessionId string, taskId uint) error {
 	task, err := taskUseCase.taskRepo.GetById(sessionId, taskId)
 	if err != nil {
-		return dto.TaskDto{}, err
+		return err
 	}
 
 	task.Completed = true
 
-	taskResult, err := taskUseCase.taskRepo.Update(task)
-	if err != nil {
-		return dto.TaskDto{}, err
-	}
-
-	taskDto := fromTaskToTaskDto(taskResult)
-	return taskDto, nil
+	return taskUseCase.taskRepo.Update(task)
 }
 
-func (taskUseCase *TaskUseCase) Update(updateTaskDto dto.UpdateTaskDto) (dto.TaskDto, error) {
+func (taskUseCase *TaskUseCase) Update(updateTaskDto dto.UpdateTaskDto) error {
 	task := fromUpdateTaskDtoToTask(updateTaskDto)
 
-	taskResult, err := taskUseCase.taskRepo.Update(task)
-	if err != nil {
-		return dto.TaskDto{}, err
-	}
-
-	taskDto := fromTaskToTaskDto(taskResult)
-	return taskDto, nil
+	return taskUseCase.taskRepo.Update(task)
 }
 
 func (taskUseCase *TaskUseCase) Delete(sessionId string, taskId uint) error {

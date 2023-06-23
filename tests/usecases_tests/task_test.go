@@ -14,9 +14,8 @@ import (
 
 func TestCreate(t *testing.T) {
 	type testCase struct {
-		name     string
-		args     dto.CreateTaskDto
-		expected dto.TaskDto
+		name string
+		args dto.CreateTaskDto
 	}
 
 	tests := []testCase{
@@ -27,33 +26,19 @@ func TestCreate(t *testing.T) {
 				Title:       "task 1",
 				Description: "description for task 1",
 			},
-			expected: dto.TaskDto{
-				SessionId:   "1",
-				Id:          1,
-				Title:       "task 1",
-				Description: "description for task 1",
-				Completed:   false,
-			},
 		},
 	}
 
 	taskRepoMock := repos_mocks.NewTaskRepoMock()
-	taskRepoMock.On("Create", mock.AnythingOfType("entities.Task")).Return(entities.Task{
-		SessionId:   "1",
-		Id:          1,
-		Title:       "task 1",
-		Description: "description for task 1",
-		Completed:   false,
-	}, nil).Once()
+	taskRepoMock.On("Create", mock.AnythingOfType("entities.Task")).Return(nil).Once()
 
 	var taskUseCase interfaces.TaskUseCase = usecases.NewTaskUseCase(taskRepoMock)
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			received, err := taskUseCase.Create(test.args)
+			err := taskUseCase.Create(test.args)
 
 			assert.NoError(t, err)
-			assert.EqualValues(t, test.expected, received)
 		})
 	}
 }
@@ -169,7 +154,6 @@ func TestComplete(t *testing.T) {
 	type testCase struct {
 		name string
 		args
-		expected dto.TaskDto
 	}
 
 	tests := []testCase{
@@ -178,13 +162,6 @@ func TestComplete(t *testing.T) {
 			args: args{
 				sessionId: "1",
 				taskId:    1,
-			},
-			expected: dto.TaskDto{
-				SessionId:   "1",
-				Id:          1,
-				Title:       "task 1",
-				Description: "description for task 1",
-				Completed:   true,
 			},
 		},
 	}
@@ -203,19 +180,17 @@ func TestComplete(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			received, err := taskUseCase.Complete(test.args.sessionId, test.args.taskId)
+			err := taskUseCase.Complete(test.args.sessionId, test.args.taskId)
 
 			assert.NoError(t, err)
-			assert.EqualValues(t, test.expected, received)
 		})
 	}
 }
 
 func TestUpdate(t *testing.T) {
 	type testCase struct {
-		name     string
-		args     dto.UpdateTaskDto
-		expected dto.TaskDto
+		name string
+		args dto.UpdateTaskDto
 	}
 
 	tests := []testCase{
@@ -227,13 +202,6 @@ func TestUpdate(t *testing.T) {
 				Title:       "task 2",
 				Description: "description for task 2",
 			},
-			expected: dto.TaskDto{
-				SessionId:   "1",
-				Id:          1,
-				Title:       "task 2",
-				Description: "description for task 2",
-				Completed:   false,
-			},
 		},
 	}
 
@@ -244,10 +212,9 @@ func TestUpdate(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			received, err := taskUseCase.Update(test.args)
+			err := taskUseCase.Update(test.args)
 
 			assert.NoError(t, err)
-			assert.EqualValues(t, test.expected, received)
 		})
 	}
 }

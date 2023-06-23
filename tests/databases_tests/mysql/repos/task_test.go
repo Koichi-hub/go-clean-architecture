@@ -11,9 +11,8 @@ import (
 
 func TestCreate(t *testing.T) {
 	type testCase struct {
-		name     string
-		args     entities.Task
-		expected entities.Task
+		name string
+		args entities.Task
 	}
 
 	tests := []testCase{
@@ -24,13 +23,6 @@ func TestCreate(t *testing.T) {
 				Title:       "task 1",
 				Description: "description for task 1",
 			},
-			expected: entities.Task{
-				SessionId:   "1",
-				Id:          1,
-				Title:       "task 1",
-				Description: "description for task 1",
-				Completed:   false,
-			},
 		},
 	}
 
@@ -38,10 +30,9 @@ func TestCreate(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			received, err := taskRepo.Create(test.args)
+			err := taskRepo.Create(test.args)
 
 			assert.NoError(t, err)
-			assert.EqualValues(t, test.expected, received)
 		})
 	}
 }

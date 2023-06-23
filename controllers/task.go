@@ -33,46 +33,44 @@ func (taskController *TaskController) RegisterRoutes(r *gin.Engine) {
 func (taskController *TaskController) Create(ctx *gin.Context) {
 	sessionId, err := getSessionId(ctx)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, newHttpError(err.Error()))
 		return
 	}
 
 	var createTaskRequest api_dto.CreateTaskRequest
 	if err := ctx.ShouldBindJSON(&createTaskRequest); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, newHttpError(err.Error()))
 		return
 	}
 
 	taskDto := fromCreateTaskRequestToCreateTaskDto(createTaskRequest)
 	taskDto.SessionId = sessionId
 
-	taskDtoResult, err := taskController.taskUseCase.Create(taskDto)
-	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if err := taskController.taskUseCase.Create(taskDto); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, newHttpError(err.Error()))
 		return
 	}
 
-	taskResponse := fromTaskDtoToTaskResponse(taskDtoResult)
-	ctx.JSON(http.StatusCreated, taskResponse)
+	ctx.JSON(http.StatusCreated, "")
 }
 
 func (taskController *TaskController) GetById(ctx *gin.Context) {
 	sessionId, err := getSessionId(ctx)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, newHttpError(err.Error()))
 		return
 	}
 
 	param_id := ctx.Param("id")
 	taskId, err := strconv.Atoi(param_id)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, newHttpError(err.Error()))
 		return
 	}
 
 	taskDto, err := taskController.taskUseCase.GetById(sessionId, uint(taskId))
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, newHttpError(err.Error()))
 		return
 	}
 
@@ -83,13 +81,13 @@ func (taskController *TaskController) GetById(ctx *gin.Context) {
 func (taskController *TaskController) GetAll(ctx *gin.Context) {
 	sessionId, err := getSessionId(ctx)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, newHttpError(err.Error()))
 		return
 	}
 
 	tasksDto, err := taskController.taskUseCase.GetAll(sessionId)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, newHttpError(err.Error()))
 		return
 	}
 
@@ -105,44 +103,42 @@ func (taskController *TaskController) GetAll(ctx *gin.Context) {
 func (taskController *TaskController) Complete(ctx *gin.Context) {
 	sessionId, err := getSessionId(ctx)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, newHttpError(err.Error()))
 		return
 	}
 
 	param_id := ctx.Param("id")
 	taskId, err := strconv.Atoi(param_id)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, newHttpError(err.Error()))
 		return
 	}
 
-	taskDto, err := taskController.taskUseCase.Complete(sessionId, uint(taskId))
-	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if err := taskController.taskUseCase.Complete(sessionId, uint(taskId)); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, newHttpError(err.Error()))
 		return
 	}
 
-	taskResponse := fromTaskDtoToTaskResponse(taskDto)
-	ctx.JSON(http.StatusOK, taskResponse)
+	ctx.Status(http.StatusOK)
 }
 
 func (taskController *TaskController) Update(ctx *gin.Context) {
 	sessionId, err := getSessionId(ctx)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, newHttpError(err.Error()))
 		return
 	}
 
 	param_id := ctx.Param("id")
 	taskId, err := strconv.Atoi(param_id)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, newHttpError(err.Error()))
 		return
 	}
 
 	var updateTaskRequest api_dto.UpdateTaskRequest
 	if err := ctx.ShouldBindJSON(&updateTaskRequest); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, newHttpError(err.Error()))
 		return
 	}
 
@@ -150,33 +146,31 @@ func (taskController *TaskController) Update(ctx *gin.Context) {
 	updateTaskDto.SessionId = sessionId
 	updateTaskDto.Id = uint(taskId)
 
-	taskDto, err := taskController.taskUseCase.Update(updateTaskDto)
-	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if err := taskController.taskUseCase.Update(updateTaskDto); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, newHttpError(err.Error()))
 		return
 	}
 
-	taskResponse := fromTaskDtoToTaskResponse(taskDto)
-	ctx.JSON(http.StatusOK, taskResponse)
+	ctx.Status(http.StatusOK)
 }
 
 func (taskController *TaskController) Delete(ctx *gin.Context) {
 	sessionId, err := getSessionId(ctx)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, newHttpError(err.Error()))
 		return
 	}
 
 	param_id := ctx.Param("id")
 	taskId, err := strconv.Atoi(param_id)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, newHttpError(err.Error()))
 		return
 	}
 
 	err = taskController.taskUseCase.Delete(sessionId, uint(taskId))
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, newHttpError(err.Error()))
 		return
 	}
 
