@@ -17,10 +17,11 @@ func NewTaskRepo(db *gorm.DB) *TaskRepo {
 	}
 }
 
-func (taskRepo *TaskRepo) Create(task entities.Task) error {
+func (taskRepo *TaskRepo) Create(task entities.Task) (uint, error) {
 	taskModel := fromTaskToTaskModel(task)
 
-	return taskRepo.db.Create(&taskModel).Error
+	err := taskRepo.db.Create(&taskModel).Error
+	return taskModel.Id, err
 }
 
 func (taskRepo *TaskRepo) GetById(sessionId string, taskId uint) (entities.Task, error) {

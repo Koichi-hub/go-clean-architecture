@@ -46,12 +46,13 @@ func (taskController *TaskController) Create(ctx *gin.Context) {
 	taskDto := fromCreateTaskRequestToCreateTaskDto(createTaskRequest)
 	taskDto.SessionId = sessionId
 
-	if err := taskController.taskUseCase.Create(taskDto); err != nil {
+	taskId, err := taskController.taskUseCase.Create(taskDto)
+	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, newHttpError(err.Error()))
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, "")
+	ctx.JSON(http.StatusCreated, taskId)
 }
 
 func (taskController *TaskController) GetById(ctx *gin.Context) {

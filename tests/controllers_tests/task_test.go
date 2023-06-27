@@ -22,8 +22,9 @@ import (
 
 func TestCreate(t *testing.T) {
 	type testCase struct {
-		name string
-		args api_dto.CreateTaskRequest
+		name     string
+		args     api_dto.CreateTaskRequest
+		expected uint
 	}
 
 	tests := []testCase{
@@ -33,11 +34,12 @@ func TestCreate(t *testing.T) {
 				Title:       "task 1",
 				Description: "description for task 1",
 			},
+			expected: 1,
 		},
 	}
 
 	taskUseCaseMock := usecases_mocks.NewTaskUseCaseMock()
-	taskUseCaseMock.On("Create", mock.AnythingOfType("dto.CreateTaskDto")).Return(nil).Once()
+	taskUseCaseMock.On("Create", mock.AnythingOfType("dto.CreateTaskDto")).Return(1, nil).Once()
 
 	taskController := controllers.NewTaskController(taskUseCaseMock)
 
@@ -57,6 +59,10 @@ func TestCreate(t *testing.T) {
 
 			taskController.Create(ctx)
 			assert.Equal(t, http.StatusCreated, res.Code)
+
+			taskId, err := strconv.Atoi(res.Body.String())
+			assert.NoError(t, err)
+			assert.EqualValues(t, test.expected, taskId)
 		})
 	}
 }

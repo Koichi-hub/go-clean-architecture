@@ -16,7 +16,7 @@ func NewTaskUseCase(taskRepo interfaces.TaskRepo) *TaskUseCase {
 	}
 }
 
-func (taskUseCase *TaskUseCase) Create(createTaskDto dto.CreateTaskDto) error {
+func (taskUseCase *TaskUseCase) Create(createTaskDto dto.CreateTaskDto) (uint, error) {
 	task := fromCreateTaskDtoToTask(createTaskDto)
 
 	return taskUseCase.taskRepo.Create(task)

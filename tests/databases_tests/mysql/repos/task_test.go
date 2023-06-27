@@ -60,9 +60,10 @@ func TestCreate(t *testing.T) {
 				WillReturnResult(sqlmock.NewResult(int64(test.expected), 1))
 			mock.ExpectCommit()
 
-			err := taskRepo.Create(test.args)
+			taskId, err := taskRepo.Create(test.args)
 
 			assert.NoError(t, err)
+			assert.EqualValues(t, test.expected, taskId)
 		})
 	}
 }

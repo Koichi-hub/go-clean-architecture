@@ -14,8 +14,9 @@ import (
 
 func TestCreate(t *testing.T) {
 	type testCase struct {
-		name string
-		args dto.CreateTaskDto
+		name     string
+		args     dto.CreateTaskDto
+		expected uint
 	}
 
 	tests := []testCase{
@@ -26,19 +27,21 @@ func TestCreate(t *testing.T) {
 				Title:       "task 1",
 				Description: "description for task 1",
 			},
+			expected: 1,
 		},
 	}
 
 	taskRepoMock := repos_mocks.NewTaskRepoMock()
-	taskRepoMock.On("Create", mock.AnythingOfType("entities.Task")).Return(nil).Once()
+	taskRepoMock.On("Create", mock.AnythingOfType("entities.Task")).Return(1, nil).Once()
 
 	var taskUseCase interfaces.TaskUseCase = usecases.NewTaskUseCase(taskRepoMock)
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			err := taskUseCase.Create(test.args)
+			taskId, err := taskUseCase.Create(test.args)
 
 			assert.NoError(t, err)
+			assert.EqualValues(t, test.expected, taskId)
 		})
 	}
 }

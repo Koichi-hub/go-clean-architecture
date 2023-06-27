@@ -14,10 +14,10 @@ func NewTaskRepoMock() *TaskRepoMock {
 	return &TaskRepoMock{}
 }
 
-func (taskRepoMock *TaskRepoMock) Create(task entities.Task) error {
+func (taskRepoMock *TaskRepoMock) Create(task entities.Task) (uint, error) {
 	args := taskRepoMock.Called(task)
 
-	return args.Error(0)
+	return uint(args.Int(0)), args.Error(1)
 }
 
 func (taskRepoMock *TaskRepoMock) GetById(sessionId string, taskId uint) (entities.Task, error) {

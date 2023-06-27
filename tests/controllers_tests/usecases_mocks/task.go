@@ -14,10 +14,10 @@ func NewTaskUseCaseMock() *TaskUseCaseMock {
 	return &TaskUseCaseMock{}
 }
 
-func (taskUseCaseMock *TaskUseCaseMock) Create(createTaskDto dto.CreateTaskDto) error {
+func (taskUseCaseMock *TaskUseCaseMock) Create(createTaskDto dto.CreateTaskDto) (uint, error) {
 	args := taskUseCaseMock.Called(createTaskDto)
 
-	return args.Error(0)
+	return uint(args.Int(0)), args.Error(1)
 }
 
 func (taskUseCaseMock *TaskUseCaseMock) GetById(sessionId string, taskId uint) (dto.TaskDto, error) {
