@@ -1,15 +1,26 @@
 package repos
 
-import "go-clean-architecture/entities"
+import (
+	"go-clean-architecture/databases/mysql/models"
+	"go-clean-architecture/entities"
 
-type TaskRepo struct{}
+	"gorm.io/gorm"
+)
 
-func NewTaskRepo() *TaskRepo {
-	return &TaskRepo{}
+type TaskRepo struct {
+	db *gorm.DB
 }
 
-func (taskRepo *TaskRepo) Create(entities.Task) error {
-	return nil
+func NewTaskRepo(db *gorm.DB) *TaskRepo {
+	return &TaskRepo{
+		db: db,
+	}
+}
+
+func (taskRepo *TaskRepo) Create(task entities.Task) error {
+	taskModel := fromTaskToTaskModel(task)
+
+	return taskRepo.db.Create(&taskModel).Error
 }
 
 func (taskRepo *TaskRepo) GetById(sessionId string, taskId uint) (entities.Task, error) {
@@ -26,4 +37,16 @@ func (taskRepo *TaskRepo) Update(entities.Task) error {
 
 func (taskRepo *TaskRepo) Delete(sessionId string, taskId uint) error {
 	return nil
+}
+
+func fromTaskToTaskModel(task entities.Task) models.TaskModel {
+	return models.TaskModel{
+		SessionId:   task.SessionId,
+		Id:          task.Id,
+		Title:       task.Title,
+		Description: task.Description,
+		Completed:   task.Completed,
+		CreatedAt:   task.CreatedAt,
+		UpdatedAt:   task.UpdatedAt,
+	}
 }
