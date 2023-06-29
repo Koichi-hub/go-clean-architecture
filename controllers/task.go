@@ -22,12 +22,12 @@ func NewTaskController(taskUseCase interfaces.TaskUseCase) *TaskController {
 
 func (taskController *TaskController) RegisterRoutes(r *gin.Engine) {
 	g := r.Group("/tasks")
-	g.POST("/", taskController.Create)
-	g.GET("/:taskId", taskController.GetById)
-	g.GET("/", taskController.GetAll)
-	g.PATCH("/complete", taskController.Complete)
-	g.PUT("/", taskController.Update)
-	g.DELETE("/", taskController.Delete)
+	g.POST("", taskController.Create)
+	g.GET(":taskId", taskController.GetById)
+	g.GET("", taskController.GetAll)
+	g.PATCH("complete", taskController.Complete)
+	g.PUT("", taskController.Update)
+	g.DELETE("", taskController.Delete)
 }
 
 func (taskController *TaskController) Create(ctx *gin.Context) {
