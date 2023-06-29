@@ -51,7 +51,7 @@ func TestCreate(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			query := "INSERT INTO `task_models` (`session_id`,`title`,`description`,`completed`,`created_at`,`updated_at`) VALUES (?,?,?,?,?,?)"
+			query := "INSERT INTO `tasks` (`session_id`,`title`,`description`,`completed`,`created_at`,`updated_at`) VALUES (?,?,?,?,?,?)"
 			queryArgs := []driver.Value{test.args.SessionId, test.args.Title, test.args.Description, test.args.Completed, sqlmock.AnyArg(), sqlmock.AnyArg()}
 
 			mock.ExpectBegin()
@@ -115,7 +115,7 @@ func TestGetById(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			query := "SELECT * FROM `task_models` WHERE session_id = ? AND id = ? ORDER BY `task_models`.`id` LIMIT 1"
+			query := "SELECT * FROM `tasks` WHERE session_id = ? AND id = ? ORDER BY `tasks`.`id` LIMIT 1"
 
 			mock.ExpectQuery(regexp.QuoteMeta(query)).
 				WillReturnRows(
@@ -192,7 +192,7 @@ func TestGetAll(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			query := "SELECT * FROM `task_models` WHERE session_id = ?"
+			query := "SELECT * FROM `tasks` WHERE session_id = ?"
 
 			rows := sqlmock.NewRows([]string{"session_id", "id", "title", "description", "completed", "created_at", "updated_at"})
 			for _, v := range test.expected {
@@ -248,8 +248,8 @@ func TestUpdate(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			query := "UPDATE `task_models` SET `title`=?,`description`=?,`completed`=?,`created_at`=?,`updated_at`=? WHERE `session_id` = ? AND `id` = ?"
-			queryArgs := []driver.Value{test.args.Title, test.args.Description, test.args.Completed, sqlmock.AnyArg(), sqlmock.AnyArg(), test.args.SessionId, test.args.Id}
+			query := "UPDATE `tasks` SET `title`=?,`description`=?,`completed`=?,`created_at`=?,`updated_at`=? WHERE `id` = ? AND `session_id` = ?"
+			queryArgs := []driver.Value{test.args.Title, test.args.Description, test.args.Completed, sqlmock.AnyArg(), sqlmock.AnyArg(), test.args.Id, test.args.SessionId}
 
 			mock.ExpectBegin()
 			mock.ExpectExec(regexp.QuoteMeta(query)).
@@ -305,7 +305,7 @@ func TestDelete(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			query := "DELETE FROM `task_models` WHERE session_id = ? AND id = ?"
+			query := "DELETE FROM `tasks` WHERE session_id = ? AND id = ?"
 			queryArgs := []driver.Value{test.args.sessionId, test.args.taskId}
 
 			mock.ExpectBegin()
