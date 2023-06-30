@@ -7,7 +7,13 @@ dev:
 
 # -----> docker <-----
 docker-build:
-	docker build --rm --tag todo .
+	docker build --rm --tag go-clean-architecture .
+
+docker-compose-up:
+	docker compose -f docker-compose.yml up
+
+docker-compose-down:
+	docker compose -f docker-compose.yml down
 
 # -----> tests <-----
 tests: test-usecases test-repos test-controllers

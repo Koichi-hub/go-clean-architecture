@@ -1,0 +1,31 @@
+version: '3.7'
+services:
+  app:
+    image: go-clean-architecture
+    container_name: todo
+    restart: always
+    ports:
+      - ${PORT}:${PORT}
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DOTENV_PATH=.env
+    volumes:
+      - ./.env:/app/.env
+
+  db:
+    image: mysql:5.7
+    container_name: mysql
+    restart: always
+    ports:
+      - ${MYSQL_PORT}:${MYSQL_PORT}
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
+      timeout: 5s
+      retries: 10

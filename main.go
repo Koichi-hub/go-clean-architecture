@@ -7,6 +7,7 @@ import (
 	"go-clean-architecture/databases/mysql/db"
 	"go-clean-architecture/databases/mysql/repos"
 	"go-clean-architecture/usecases"
+	"log"
 
 	"github.com/gin-gonic/gin"
 )
@@ -35,6 +36,7 @@ func main() {
 
 	taskController.RegisterRoutes(r)
 
+	log.Println("Starting http-server...")
 	address := fmt.Sprintf("%s:%d", cfg.HOST, cfg.PORT)
 	r.Run(address)
 }

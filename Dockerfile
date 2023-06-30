@@ -10,5 +10,4 @@ WORKDIR /app
 COPY --from=builder /app/.env /app/
 COPY --from=builder /app/main /app/
 EXPOSE 8080
-ENV DOTENV_PATH=.env
 CMD /app/main
