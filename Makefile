@@ -1,5 +1,13 @@
-run:
-	go run main.go
+# -----> development <-----
+build:
+	go build -o main ./main.go
+
+dev:
+	DOTENV_PATH=".dev.env" go run main.go
+
+# -----> docker <-----
+docker-build:
+	docker build --rm --tag todo .
 
 # -----> tests <-----
 tests: test-usecases test-repos test-controllers

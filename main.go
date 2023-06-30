@@ -13,7 +13,7 @@ import (
 
 func main() {
 	// config
-	cfg := config.LoadConfig(".env")
+	cfg := config.LoadConfig()
 
 	// database
 	db := db.Connect(cfg)
@@ -28,6 +28,9 @@ func main() {
 	taskController := controllers.NewTaskController(taskUseCase)
 
 	// http server
+	if cfg.MODE == "prod" {
+		gin.SetMode(gin.ReleaseMode)
+	}
 	r := gin.Default()
 
 	taskController.RegisterRoutes(r)

@@ -2,11 +2,14 @@ package config
 
 import (
 	"log"
+	"os"
 
 	"github.com/spf13/viper"
 )
 
 type Config struct {
+	MODE string
+
 	MYSQL_USER     string
 	MYSQL_PASSWORD string
 	MYSQL_DATABASE string
@@ -17,7 +20,9 @@ type Config struct {
 	PORT int
 }
 
-func LoadConfig(path string) *Config {
+func LoadConfig() *Config {
+	path := os.Getenv("DOTENV_PATH")
+
 	viper.SetConfigFile(path)
 	viper.AutomaticEnv()
 	err := viper.ReadInConfig()
