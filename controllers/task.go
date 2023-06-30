@@ -2,6 +2,9 @@ package controllers
 
 import (
 	"go-clean-architecture/controllers/api_dto"
+	"go-clean-architecture/controllers/controllers_errors"
+	"go-clean-architecture/controllers/helper"
+	"go-clean-architecture/controllers/middlewares"
 	"go-clean-architecture/usecases/dto"
 	"go-clean-architecture/usecases/interfaces"
 	"net/http"
@@ -20,10 +23,11 @@ func NewTaskController(taskUseCase interfaces.TaskUseCase) *TaskController {
 	}
 }
 
-func (taskController *TaskController) RegisterRoutes(r *gin.Engine) {
+func (taskController *TaskController) RegisterRoutes(r *gin.Engine, sessionMiddleware *middlewares.SessionMiddleware) {
 	g := r.Group("/tasks")
+	g.Use(sessionMiddleware.Middleware())
 	g.POST("", taskController.Create)
-	g.GET(":taskId", taskController.GetById)
+	g.GET(":id", taskController.GetById)
 	g.GET("", taskController.GetAll)
 	g.PATCH("complete", taskController.Complete)
 	g.PUT("", taskController.Update)
@@ -31,15 +35,15 @@ func (taskController *TaskController) RegisterRoutes(r *gin.Engine) {
 }
 
 func (taskController *TaskController) Create(ctx *gin.Context) {
-	sessionId, err := getSessionId(ctx)
+	sessionId, err := helper.GetSessionId(ctx)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, newHttpError(err.Error()))
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, controllers_errors.NewHttpError(err.Error()))
 		return
 	}
 
 	var createTaskRequest api_dto.CreateTaskRequest
 	if err := ctx.ShouldBindJSON(&createTaskRequest); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, newHttpError(err.Error()))
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, controllers_errors.NewHttpError(err.Error()))
 		return
 	}
 
@@ -48,7 +52,7 @@ func (taskController *TaskController) Create(ctx *gin.Context) {
 
 	taskId, err := taskController.taskUseCase.Create(taskDto)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, newHttpError(err.Error()))
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, controllers_errors.NewHttpError(err.Error()))
 		return
 	}
 
@@ -56,22 +60,22 @@ func (taskController *TaskController) Create(ctx *gin.Context) {
 }
 
 func (taskController *TaskController) GetById(ctx *gin.Context) {
-	sessionId, err := getSessionId(ctx)
+	sessionId, err := helper.GetSessionId(ctx)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, newHttpError(err.Error()))
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, controllers_errors.NewHttpError(err.Error()))
 		return
 	}
 
 	param_id := ctx.Param("id")
 	taskId, err := strconv.Atoi(param_id)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, newHttpError(err.Error()))
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, controllers_errors.NewHttpError(err.Error()))
 		return
 	}
 
 	taskDto, err := taskController.taskUseCase.GetById(sessionId, uint(taskId))
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, newHttpError(err.Error()))
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, controllers_errors.NewHttpError(err.Error()))
 		return
 	}
 
@@ -80,15 +84,15 @@ func (taskController *TaskController) GetById(ctx *gin.Context) {
 }
 
 func (taskController *TaskController) GetAll(ctx *gin.Context) {
-	sessionId, err := getSessionId(ctx)
+	sessionId, err := helper.GetSessionId(ctx)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, newHttpError(err.Error()))
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, controllers_errors.NewHttpError(err.Error()))
 		return
 	}
 
 	tasksDto, err := taskController.taskUseCase.GetAll(sessionId)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, newHttpError(err.Error()))
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, controllers_errors.NewHttpError(err.Error()))
 		return
 	}
 
@@ -102,21 +106,21 @@ func (taskController *TaskController) GetAll(ctx *gin.Context) {
 }
 
 func (taskController *TaskController) Complete(ctx *gin.Context) {
-	sessionId, err := getSessionId(ctx)
+	sessionId, err := helper.GetSessionId(ctx)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, newHttpError(err.Error()))
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, controllers_errors.NewHttpError(err.Error()))
 		return
 	}
 
 	param_id := ctx.Param("id")
 	taskId, err := strconv.Atoi(param_id)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, newHttpError(err.Error()))
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, controllers_errors.NewHttpError(err.Error()))
 		return
 	}
 
 	if err := taskController.taskUseCase.Complete(sessionId, uint(taskId)); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, newHttpError(err.Error()))
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, controllers_errors.NewHttpError(err.Error()))
 		return
 	}
 
@@ -124,22 +128,22 @@ func (taskController *TaskController) Complete(ctx *gin.Context) {
 }
 
 func (taskController *TaskController) Update(ctx *gin.Context) {
-	sessionId, err := getSessionId(ctx)
+	sessionId, err := helper.GetSessionId(ctx)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, newHttpError(err.Error()))
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, controllers_errors.NewHttpError(err.Error()))
 		return
 	}
 
 	param_id := ctx.Param("id")
 	taskId, err := strconv.Atoi(param_id)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, newHttpError(err.Error()))
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, controllers_errors.NewHttpError(err.Error()))
 		return
 	}
 
 	var updateTaskRequest api_dto.UpdateTaskRequest
 	if err := ctx.ShouldBindJSON(&updateTaskRequest); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, newHttpError(err.Error()))
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, controllers_errors.NewHttpError(err.Error()))
 		return
 	}
 
@@ -148,7 +152,7 @@ func (taskController *TaskController) Update(ctx *gin.Context) {
 	updateTaskDto.Id = uint(taskId)
 
 	if err := taskController.taskUseCase.Update(updateTaskDto); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, newHttpError(err.Error()))
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, controllers_errors.NewHttpError(err.Error()))
 		return
 	}
 
@@ -156,22 +160,22 @@ func (taskController *TaskController) Update(ctx *gin.Context) {
 }
 
 func (taskController *TaskController) Delete(ctx *gin.Context) {
-	sessionId, err := getSessionId(ctx)
+	sessionId, err := helper.GetSessionId(ctx)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, newHttpError(err.Error()))
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, controllers_errors.NewHttpError(err.Error()))
 		return
 	}
 
 	param_id := ctx.Param("id")
 	taskId, err := strconv.Atoi(param_id)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, newHttpError(err.Error()))
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, controllers_errors.NewHttpError(err.Error()))
 		return
 	}
 
 	err = taskController.taskUseCase.Delete(sessionId, uint(taskId))
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, newHttpError(err.Error()))
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, controllers_errors.NewHttpError(err.Error()))
 		return
 	}
 

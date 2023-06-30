@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"go-clean-architecture/config"
 	"go-clean-architecture/controllers"
+	"go-clean-architecture/controllers/middlewares"
 	"go-clean-architecture/databases/mysql/db"
 	"go-clean-architecture/databases/mysql/repos"
 	"go-clean-architecture/usecases"
@@ -26,7 +27,11 @@ func main() {
 	taskUseCase := usecases.NewTaskUseCase(taskRepo)
 
 	// controllers
+	sessionController := controllers.NewSessionController()
 	taskController := controllers.NewTaskController(taskUseCase)
+
+	// middlewares
+	sessionMiddleware := middlewares.NewSessionMiddleware()
 
 	// http server
 	if cfg.MODE == "prod" {
@@ -34,7 +39,8 @@ func main() {
 	}
 	r := gin.Default()
 
-	taskController.RegisterRoutes(r)
+	sessionController.RegisterRoutes(r)
+	taskController.RegisterRoutes(r, sessionMiddleware)
 
 	log.Println("Starting http-server...")
 	address := fmt.Sprintf("%s:%d", cfg.HOST, cfg.PORT)

@@ -1,4 +1,4 @@
-package controllers
+package helper
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func getSessionId(ctx *gin.Context) (string, error) {
+func GetSessionId(ctx *gin.Context) (string, error) {
 	if sessionId, exists := ctx.Get("sessionId"); exists {
 		return sessionId.(string), nil
 	}

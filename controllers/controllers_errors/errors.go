@@ -1,10 +1,10 @@
-package controllers
+package controllers_errors
 
 type HttpError struct {
 	Message string `json:"message"`
 }
 
-func newHttpError(message string) *HttpError {
+func NewHttpError(message string) *HttpError {
 	return &HttpError{
 		Message: message,
 	}

@@ -41,6 +41,7 @@ require (
 	github.com/spf13/viper v1.16.0
 	github.com/stretchr/objx v0.5.0 // indirect
 	github.com/stretchr/testify v1.8.4
+	github.com/thanhpk/randstr v1.0.6
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect
 	golang.org/x/arch v0.3.0 // indirect

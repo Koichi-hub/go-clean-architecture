@@ -16,19 +16,24 @@ docker-compose-down:
 	docker compose -f docker-compose.yml down
 
 # -----> tests <-----
-tests: test-usecases test-repos test-controllers
-
-test-usecases:
-	@echo "########## test-usecases ##########"
-	go test -v ./tests/usecases_tests/
-	@echo
+tests: test-repos test-usecases test-controllers test-middlewares
 
 test-repos:
 	@echo "########## test-repos ##########"
 	go test -v ./tests/databases_tests/mysql/repos/
 	@echo
 
+test-usecases:
+	@echo "########## test-usecases ##########"
+	go test -v ./tests/usecases_tests/
+	@echo
+
 test-controllers:
 	@echo "########## test-controllers ##########"
 	GIN_MODE=release go test -v ./tests/controllers_tests
+	@echo
+
+test-middlewares:
+	@echo "########## test-middlewares ##########"
+	go test -v ./tests/controllers_tests/middlewares_tests
 	@echo
